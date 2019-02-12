@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PickUp
   - WallBreak
+  - Fixed
   layers:
   - Default
   - TransparentFX

@@ -21,19 +21,27 @@ public class PlayerController : MonoBehaviour
         winText.text = "";
     }
 
-void Update()
-{
-         RaycastHit hit;
-        Ray landingRay = new Ray(transform.position, Vector3.forward);
-        if(Physics.Raycast(landingRay, out hit, 1f))
+    void Update()
+    {
+        // This method only works for one directional ray, sphere cast would be more efficient
+        RaycastHit hit;
+        Ray landingRay0 = new Ray(transform.position, Vector3.forward);
+        Ray landingRay1 = new Ray(transform.position, Vector3.back);
+        Ray landingRay2 = new Ray(transform.position, Vector3.left);
+        Ray landingRay3 = new Ray(transform.position, Vector3.right);
+        if (Physics.Raycast(landingRay0, out hit, 0.5f) || Physics.Raycast(landingRay1, out hit, 0.5f) || Physics.Raycast(landingRay2, out hit, 0.5f) || Physics.Raycast(landingRay3, out hit, 0.5f))
         {
-            if(hit.collider.tag=="Fixed")
+            if (hit.collider.tag == "Fixed")
             {
-                rb.constraints = RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationX;
+                winText.text = "You Lost";
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+
             }
-        }}
+        }
+    }
     void FixedUpdate()
     {
+
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
@@ -41,7 +49,11 @@ void Update()
 
         rb.AddForce(movement * speed);
 
-   
+        if (Input.GetKeyDown("space") && GetComponent<Rigidbody>().transform.position.y <= 0.5f)
+        {
+            Vector3 jump = new Vector3(0.0f, 200.0f, 0.0f);
+            rb.AddForce(jump);
+        }  
 
     }
 
@@ -51,7 +63,7 @@ void Update()
         {
             other.gameObject.SetActive(false);
             count = count + 1;
-            SetCountText();
+           SetCountText();
         }
     }
     void OnCollisionEnter(Collision col) {
